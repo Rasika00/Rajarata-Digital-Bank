@@ -1,0 +1,228 @@
+package bank.ui;
+
+import bank.exception.AuthenticationException;
+import bank.model.User;
+import bank.service.AuthService;
+import bank.service.DataInitializer;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.Objects;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
+public class LoginFrame extends JFrame {
+   private JTextField emailField;
+   private JPasswordField passwordField;
+   private JLabel messageLabel;
+   private AuthService authService = new AuthService();
+
+   public LoginFrame() {
+      DataInitializer.initialize();
+      this.setTitle("Rajarata Digital Bank");
+      this.setDefaultCloseOperation(3);
+      this.setSize(1120, 700);
+      this.setLocationRelativeTo((Component)null);
+      this.setMinimumSize(new Dimension(980, 640));
+      this.setLayout(new BorderLayout());
+      this.buildUI();
+   }
+
+   private void buildUI() {
+      JPanel var1 = new JPanel() {
+         {
+            Objects.requireNonNull(LoginFrame.this);
+         }
+
+         protected void paintComponent(Graphics var1) {
+            Graphics2D var2 = (Graphics2D)var1.create();
+            GradientPaint var3 = new GradientPaint(0.0F, 0.0F, UITheme.BG_DARK, (float)this.getWidth(), (float)this.getHeight(), UITheme.PRIMARY_DARK);
+            var2.setPaint(var3);
+            var2.fillRect(0, 0, this.getWidth(), this.getHeight());
+            var2.setColor(new Color(255, 255, 255, 22));
+            var2.fillOval(-80, -40, 260, 260);
+            var2.setColor(new Color(86, 170, 216, 45));
+            var2.fillOval(this.getWidth() - 260, 80, 300, 300);
+            var2.setColor(new Color(255, 255, 255, 10));
+            var2.fillRoundRect(56, this.getHeight() - 220, this.getWidth() - 112, 120, 28, 28);
+            var2.dispose();
+            super.paintComponent(var1);
+         }
+      };
+      var1.setOpaque(false);
+      var1.setPreferredSize(new Dimension(470, 700));
+      var1.setLayout(new GridBagLayout());
+      JPanel var2 = new JPanel();
+      var2.setOpaque(false);
+      var2.setLayout(new BoxLayout(var2, 1));
+      var2.setBorder(BorderFactory.createEmptyBorder(32, 44, 32, 44));
+      JComponent var3 = UIComponents.createBrandMark("RB", 88);
+      var3.setAlignmentX(0.0F);
+      JLabel var4 = new JLabel("DIGITAL BANKING PLATFORM");
+      var4.setFont(UITheme.FONT_SMALL);
+      var4.setForeground(new Color(150, 193, 232));
+      var4.setAlignmentX(0.0F);
+      JLabel var5 = new JLabel("Rajarata Digital Bank");
+      var5.setFont(new Font("Segoe UI Semibold", 0, 32));
+      var5.setForeground(Color.WHITE);
+      var5.setAlignmentX(0.0F);
+      JLabel var6 = UIComponents.wrappedLabel("A cleaner, faster banking workspace for customers, staff, and administrators.", new Font("Segoe UI", 0, 15), new Color(192, 214, 236), 332);
+      var6.setAlignmentX(0.0F);
+      var2.add(var3);
+      var2.add(Box.createVerticalStrut(28));
+      var2.add(var4);
+      var2.add(Box.createVerticalStrut(14));
+      var2.add(var5);
+      var2.add(Box.createVerticalStrut(10));
+      var2.add(var6);
+      var2.add(Box.createVerticalStrut(38));
+      String[] var7 = new String[]{"Protected access and password validation", "Multi-account management from one profile", "Transfers, statements, and bill payments", "Loan processing with role-based control"};
+
+      for(String var11 : var7) {
+         JPanel var12 = new JPanel(new BorderLayout(8, 0));
+         var12.setOpaque(false);
+         JLabel var13 = UIComponents.createPillLabel("OK", new Color(255, 255, 255, 28), Color.WHITE);
+         JLabel var14 = UIComponents.wrappedLabel(var11, UITheme.FONT_BODY, new Color(212, 227, 242), 300);
+         var12.add(var13, "West");
+         var12.add(var14, "Center");
+         var12.setAlignmentX(0.0F);
+         var2.add(var12);
+         var2.add(Box.createVerticalStrut(12));
+      }
+
+      UIComponents.RoundedPanel var18 = new UIComponents.RoundedPanel(22, new Color(255, 255, 255, 18), new Color(255, 255, 255, 30));
+      var18.setLayout(new BoxLayout(var18, 1));
+      var18.setBorder(BorderFactory.createEmptyBorder(18, 18, 18, 18));
+      var18.setAlignmentX(0.0F);
+      var18.add(UIComponents.label("Demo Access", UITheme.FONT_SUBHEAD, Color.WHITE));
+      var18.add(Box.createVerticalStrut(8));
+      var18.add(UIComponents.label("Admin    admin@rajaratabank.lk", UITheme.FONT_BODY, new Color(214, 226, 239)));
+      var18.add(UIComponents.label("Staff    kamal@rajaratabank.lk", UITheme.FONT_BODY, new Color(214, 226, 239)));
+      var18.add(UIComponents.label("Customer nimal@gmail.com", UITheme.FONT_BODY, new Color(214, 226, 239)));
+      var18.add(Box.createVerticalStrut(4));
+      var18.add(UIComponents.wrappedLabel("Use the seeded passwords from the README or startup console output.", UITheme.FONT_SMALL, new Color(175, 194, 214), 300));
+      var2.add(Box.createVerticalStrut(18));
+      var2.add(var18);
+      var1.add(var2);
+      JPanel var19 = new JPanel(new GridBagLayout()) {
+         {
+            Objects.requireNonNull(LoginFrame.this);
+         }
+
+         protected void paintComponent(Graphics var1) {
+            Graphics2D var2 = (Graphics2D)var1.create();
+            GradientPaint var3 = new GradientPaint(0.0F, 0.0F, UITheme.BG_MAIN, (float)this.getWidth(), (float)this.getHeight(), new Color(229, 239, 247));
+            var2.setPaint(var3);
+            var2.fillRect(0, 0, this.getWidth(), this.getHeight());
+            var2.dispose();
+            super.paintComponent(var1);
+         }
+      };
+      var19.setOpaque(false);
+      UIComponents.RoundedPanel var20 = new UIComponents.RoundedPanel(28, Color.WHITE);
+      var20.setLayout(new BoxLayout(var20, 1));
+      var20.setBorder(BorderFactory.createEmptyBorder(42, 44, 40, 44));
+      var20.setMaximumSize(new Dimension(430, 580));
+      var20.setPreferredSize(new Dimension(430, 540));
+      JLabel var21 = new JLabel("Welcome Back");
+      var21.setFont(UITheme.FONT_TITLE);
+      var21.setForeground(UITheme.TEXT_PRIMARY);
+      var21.setAlignmentX(0.0F);
+      JLabel var22 = UIComponents.wrappedLabel("Sign in to continue to your banking workspace.", UITheme.FONT_BODY, UITheme.TEXT_MUTED, 320);
+      var22.setAlignmentX(0.0F);
+      this.emailField = UIComponents.createTextField("Email address");
+      this.emailField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+      this.passwordField = UIComponents.createPasswordField();
+      this.passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+      JButton var23 = UIComponents.createButton("Sign In", UITheme.PRIMARY, Color.WHITE, -1, 46);
+      var23.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
+      var23.setAlignmentX(0.0F);
+      var23.addActionListener((var1x) -> this.doLogin());
+      JButton var24 = UIComponents.createButton("Create Account", UITheme.BG_SOFT, UITheme.TEXT_PRIMARY, -1, 46);
+      var24.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
+      var24.setAlignmentX(0.0F);
+      var24.addActionListener((var1x) -> this.openRegister());
+      this.messageLabel = new JLabel(" ");
+      this.messageLabel.setFont(UITheme.FONT_SMALL);
+      this.messageLabel.setForeground(UITheme.DANGER);
+      this.messageLabel.setAlignmentX(0.0F);
+      JLabel var15 = UIComponents.wrappedLabel("Secure login with seeded data and persistent local storage.", UITheme.FONT_SMALL, UITheme.TEXT_MUTED, 320);
+      var15.setAlignmentX(0.0F);
+      this.passwordField.addKeyListener(new KeyAdapter() {
+         {
+            Objects.requireNonNull(LoginFrame.this);
+         }
+
+         public void keyPressed(KeyEvent var1) {
+            if (var1.getKeyCode() == 10) {
+               LoginFrame.this.doLogin();
+            }
+
+         }
+      });
+      this.getRootPane().setDefaultButton(var23);
+      var20.add(var21);
+      var20.add(Box.createVerticalStrut(6));
+      var20.add(var22);
+      var20.add(Box.createVerticalStrut(30));
+      JPanel var16 = UIComponents.formRow("Email Address", this.emailField);
+      var16.setAlignmentX(0.0F);
+      var20.add(var16);
+      var20.add(Box.createVerticalStrut(16));
+      JPanel var17 = UIComponents.formRow("Password", this.passwordField);
+      var17.setAlignmentX(0.0F);
+      var20.add(var17);
+      var20.add(Box.createVerticalStrut(10));
+      var20.add(this.messageLabel);
+      var20.add(Box.createVerticalStrut(18));
+      var20.add(var23);
+      var20.add(Box.createVerticalStrut(12));
+      var20.add(var24);
+      var20.add(Box.createVerticalStrut(18));
+      var20.add(var15);
+      var19.add(var20);
+      this.add(var1, "West");
+      this.add(var19, "Center");
+   }
+
+   private void doLogin() {
+      String var1 = this.emailField.getText().trim();
+      String var2 = new String(this.passwordField.getPassword());
+
+      try {
+         User var3 = this.authService.login(var1, var2);
+         this.messageLabel.setForeground(UITheme.SUCCESS);
+         this.messageLabel.setText(UIComponents.wrapHtml("Login successful! Loading dashboard...", 320));
+         SwingUtilities.invokeLater(() -> {
+            MainFrame var2 = new MainFrame(var3);
+            var2.setVisible(true);
+            this.dispose();
+         });
+      } catch (AuthenticationException var4) {
+         this.messageLabel.setForeground(UITheme.DANGER);
+         this.messageLabel.setText(UIComponents.wrapHtml(var4.getMessage(), 320));
+      }
+
+   }
+
+   private void openRegister() {
+      (new RegisterDialog(this)).setVisible(true);
+   }
+}
