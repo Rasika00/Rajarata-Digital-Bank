@@ -106,10 +106,9 @@ public class LoginFrame extends JFrame {
         credentials.add(Box.createVerticalStrut(8));
         credentials.add(UIComponents.label("Admin    admin@rajaratabank.lk", UITheme.FONT_BODY, new Color(214, 226, 239)));
         credentials.add(UIComponents.label("Staff    kamal@rajaratabank.lk", UITheme.FONT_BODY, new Color(214, 226, 239)));
-        credentials.add(UIComponents.label("Customer nimal@gmail.com", UITheme.FONT_BODY, new Color(214, 226, 239)));
         credentials.add(Box.createVerticalStrut(4));
         credentials.add(UIComponents.wrappedLabel(
-            "Use the seeded passwords from the README or startup console output.",
+            "Use seeded admin/staff passwords from the README or startup console output.",
             UITheme.FONT_SMALL,
             new Color(175, 194, 214),
             300

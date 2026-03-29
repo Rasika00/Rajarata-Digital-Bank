@@ -1,16 +1,50 @@
 import bank.ui.LoginFrame;
 import javax.swing.*;
+import java.awt.GraphicsEnvironment;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
 
 public class Main {
-    public static void main(String[] args) {
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            throwable.printStackTrace();
+    private static void logStartupError(Throwable throwable) {
+        try {
+            String base = System.getenv("LOCALAPPDATA");
+            if (base == null || base.trim().isEmpty()) {
+                base = System.getProperty("user.home");
+            }
+            File dir = new File(base, "RajarataDigitalBank/logs");
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            File logFile = new File(dir, "startup-error.log");
+            try (PrintWriter pw = new PrintWriter(new FileWriter(logFile, true))) {
+                pw.println("==== " + LocalDateTime.now() + " ====");
+                throwable.printStackTrace(pw);
+                pw.println();
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    private static void showStartupErrorDialog(Throwable throwable) {
+        if (GraphicsEnvironment.isHeadless()) return;
+        try {
             JOptionPane.showMessageDialog(
                 null,
                 "Application failed to start.\n\n" + throwable.getClass().getSimpleName() + ": " + throwable.getMessage(),
                 "Rajarata Digital Bank",
                 JOptionPane.ERROR_MESSAGE
             );
+        } catch (Throwable ignored) {
+        }
+    }
+
+    public static void main(String[] args) {
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            throwable.printStackTrace();
+            logStartupError(throwable);
+            showStartupErrorDialog(throwable);
         });
 
         try {
@@ -32,12 +66,8 @@ public class Main {
                     frame.setVisible(true);
                 } catch (Throwable t) {
                     t.printStackTrace();
-                    JOptionPane.showMessageDialog(
-                        null,
-                        "Application failed to start.\n\n" + t.getClass().getSimpleName() + ": " + t.getMessage(),
-                        "Rajarata Digital Bank",
-                        JOptionPane.ERROR_MESSAGE
-                    );
+                    logStartupError(t);
+                    showStartupErrorDialog(t);
                 }
             }
         });

@@ -6,10 +6,14 @@ import javax.swing.border.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 
 
 
@@ -56,40 +60,58 @@ public class UIComponents {
 
     public static JComponent createBrandMark(String text, int size) {
         String label = sanitizeText(text).toUpperCase();
-        final int logoWidth = Math.max(size + 24, (int) Math.round(size * 1.95));
-        final int logoHeight = size;
+        final int logoSize = Math.max(28, size);
 
-        final GradientPaint paint = new GradientPaint(0, 0, UITheme.PRIMARY_LIGHT, logoWidth, logoHeight, UITheme.PRIMARY_DARK);
         final Font brandFont = new Font("Inter", Font.BOLD, Math.max(18, size / 3));
 
         return new JComponent() {
             @Override public Dimension getPreferredSize() {
-                return new Dimension(logoWidth, logoHeight);
+                return new Dimension(logoSize, logoSize);
             }
 
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+                int diameter = Math.max(1, Math.min(getWidth(), getHeight()) - 2);
+                int x = (getWidth() - diameter) / 2;
+                int y = (getHeight() - diameter) / 2;
+                Shape circle = new Ellipse2D.Double(x, y, diameter, diameter);
 
                 BufferedImage logo = getCustomLogoImage();
                 if (logo != null) {
-                    double scale = Math.min((double) getWidth() / logo.getWidth(), (double) getHeight() / logo.getHeight());
-                    int drawW = Math.max(1, (int) Math.round(logo.getWidth() * scale));
-                    int drawH = Math.max(1, (int) Math.round(logo.getHeight() * scale));
-                    int drawX = (getWidth() - drawW) / 2;
-                    int drawY = (getHeight() - drawH) / 2;
+                    int side = Math.min(logo.getWidth(), logo.getHeight());
+                    int srcX = (logo.getWidth() - side) / 2;
+                    int srcY = (logo.getHeight() - side) / 2;
 
-                    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                    g2.drawImage(logo, drawX, drawY, drawW, drawH, null);
+                    Shape oldClip = g2.getClip();
+                    g2.setClip(circle);
+                    g2.drawImage(logo, x, y, x + diameter, y + diameter,
+                            srcX, srcY, srcX + side, srcY + side, null);
+                    g2.setClip(oldClip);
                 } else {
+                    GradientPaint paint = new GradientPaint(x, y, UITheme.PRIMARY_LIGHT, x + diameter, y + diameter, UITheme.PRIMARY_DARK);
+                    g2.setPaint(paint);
+                    g2.fill(circle);
+
+                    g2.setColor(new Color(255, 255, 255, 90));
+                    g2.setStroke(new BasicStroke(1.2f));
+                    g2.draw(circle);
+
                     g2.setColor(Color.WHITE);
                     g2.setFont(brandFont);
                     FontMetrics fm = g2.getFontMetrics();
-                    int x = (getWidth() - fm.stringWidth(label)) / 2;
-                    int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
-                    g2.drawString(label, x, y);
+                    int textX = (getWidth() - fm.stringWidth(label)) / 2;
+                    int textY = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+                    g2.drawString(label, textX, textY);
                 }
+
+                g2.setColor(new Color(255, 255, 255, 105));
+                g2.setStroke(new BasicStroke(1.4f));
+                g2.draw(circle);
+
                 g2.dispose();
             }
         };
@@ -99,8 +121,48 @@ public class UIComponents {
         if (logoLoadAttempted) return cachedCustomLogo;
         logoLoadAttempted = true;
 
+        // First try bundled classpath resources if present.
+        String[] resourceCandidates = new String[] {
+            "/logo.png",
+            "/assets/logo.png",
+            "/data/assets/logo.png"
+        };
+        for (String resourcePath : resourceCandidates) {
+            try {
+                java.io.InputStream stream = UIComponents.class.getResourceAsStream(resourcePath);
+                if (stream == null) continue;
+                try (java.io.InputStream in = stream) {
+                    cachedCustomLogo = ImageIO.read(in);
+                    if (cachedCustomLogo != null) return cachedCustomLogo;
+                }
+            } catch (IOException ignored) {
+            }
+        }
+
         String fromProperty = System.getProperty("rdb.logo.path");
         String fromEnv = System.getenv("RDB_LOGO_PATH");
+        String appPath = System.getProperty("jpackage.app-path");
+        String appDir = null;
+        if (appPath != null && !appPath.trim().isEmpty()) {
+            File launcher = new File(appPath);
+            File parent = launcher.getParentFile();
+            appDir = parent != null ? parent.getAbsolutePath() : null;
+        }
+
+        String codeSourceDir = null;
+        try {
+            ProtectionDomain pd = UIComponents.class.getProtectionDomain();
+            if (pd != null) {
+                CodeSource cs = pd.getCodeSource();
+                if (cs != null && cs.getLocation() != null) {
+                    File source = new File(cs.getLocation().toURI());
+                    File base = source.isDirectory() ? source : source.getParentFile();
+                    if (base != null) codeSourceDir = base.getAbsolutePath();
+                }
+            }
+        } catch (URISyntaxException | SecurityException ignored) {
+        }
+
         String[] candidates = new String[] {
             fromProperty,
             fromEnv,
@@ -109,7 +171,13 @@ public class UIComponents {
             "data/logo.jpeg",
             "data/assets/logo.png",
             "data/assets/logo.jpg",
-            "data/assets/logo.jpeg"
+            "data/assets/logo.jpeg",
+            appDir == null ? null : appDir + File.separator + "logo.png",
+            appDir == null ? null : appDir + File.separator + "assets" + File.separator + "logo.png",
+            appDir == null ? null : appDir + File.separator + "data" + File.separator + "assets" + File.separator + "logo.png",
+            codeSourceDir == null ? null : codeSourceDir + File.separator + "logo.png",
+            codeSourceDir == null ? null : codeSourceDir + File.separator + "assets" + File.separator + "logo.png",
+            codeSourceDir == null ? null : codeSourceDir + File.separator + "data" + File.separator + "assets" + File.separator + "logo.png"
         };
 
         for (String path : candidates) {
@@ -119,7 +187,7 @@ public class UIComponents {
             try {
                 cachedCustomLogo = ImageIO.read(f);
                 if (cachedCustomLogo != null) return cachedCustomLogo;
-            } catch (IOException ignored) {
+            } catch (IOException | RuntimeException ignored) {
             }
         }
         return null;

@@ -2,6 +2,7 @@ package bank.service;
 
 import bank.exception.BankingException;
 import bank.model.*;
+import bank.util.FileHandler;
 import bank.util.PasswordUtil;
 
 
@@ -10,6 +11,7 @@ import bank.util.PasswordUtil;
 public class DataInitializer {
     public static void initialize() {
         DataStore store = DataStore.getInstance();
+        System.out.println("Data directory: " + FileHandler.dataDirectory().getAbsolutePath());
 
         
         boolean hasAdmin = store.getAllUsers().stream().anyMatch(u -> u.getRole() == UserRole.ADMIN);
@@ -22,28 +24,10 @@ public class DataInitializer {
                     "0777654321", PasswordUtil.hash("Staff@1234"), "Loans", "STF001");
             store.putUser(staff);
 
-            
-            try {
-                AuthService auth = new AuthService();
-                Customer customer = auth.registerCustomer("Nimal Silva", "nimal@gmail.com",
-                        "0712345678", "Customer@123", "199012345678", "123 Main St, Colombo");
-
-                AccountService accountService = new AccountService();
-                
-                accountService.openAccount(customer, AccountType.SAVINGS, 5000.0);
-                
-                accountService.openAccount(customer, AccountType.CHECKING, 2000.0);
-                
-                accountService.openAccount(customer, AccountType.SAVINGS, 100.0, "USD");
-            } catch (BankingException e) {
-                System.err.println("Sample data error: " + e.getMessage());
-            }
-
             store.persist();
             System.out.println("Default data initialized.");
             System.out.println("Admin: admin@rajaratabank.lk / Admin@1234");
             System.out.println("Staff: kamal@rajaratabank.lk / Staff@1234");
-            System.out.println("Customer: nimal@gmail.com / Customer@123");
         }
 
         

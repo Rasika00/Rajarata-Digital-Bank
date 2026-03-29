@@ -8,6 +8,7 @@ import java.util.Map;
 
 
 public class FileHandler {
+    private static final String DATA_NAMESPACE = "data-v2";
     private static final File DATA_DIR = resolveDataDirectory();
 
     static {
@@ -22,12 +23,12 @@ public class FileHandler {
             return new File(customDir.trim());
         }
 
-        String appData = System.getenv("APPDATA");
-        if (appData != null && !appData.trim().isEmpty()) {
-            return new File(appData, "RajarataDigitalBank\\data");
+        String localAppData = System.getenv("LOCALAPPDATA");
+        if (localAppData != null && !localAppData.trim().isEmpty()) {
+            return new File(localAppData, "RajarataDigitalBank\\" + DATA_NAMESPACE);
         }
 
-        return new File(System.getProperty("user.home"), ".RajarataDigitalBank/data");
+        return new File(System.getProperty("user.home"), ".RajarataDigitalBank/" + DATA_NAMESPACE);
     }
 
     public static String dataPath(String filename) {

@@ -62,7 +62,7 @@ if not exist data\assets\logo.ico (
   exit /b 1
 )
 
-set "APP_VERSION=1.0.1"
+set "APP_VERSION=1.0.3"
 
 echo Building Windows EXE installer with jpackage...
 jpackage --type exe ^
@@ -71,6 +71,7 @@ jpackage --type exe ^
   --input dist\input ^
   --main-jar RajarataBank.jar ^
   --main-class Main ^
+  --app-content data\assets ^
   --dest dist\output ^
   --icon data\assets\logo.ico ^
   --vendor "Rajarata Digital Bank" ^
