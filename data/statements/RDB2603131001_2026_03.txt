@@ -1,0 +1,47 @@
+========================================================================
+                         RAJARATA DIGITAL BANK
+                       Monthly Account Statement
+                     Generated: 13/03/2026 13:02:40
+========================================================================
+
+CUSTOMER INFORMATION
+------------------------------------------------------------------------
+Customer Name            : rasika priyanath
+Customer ID              : USR1011
+Email                    : rasikapriyanath62@gmail.com
+Phone                    : 0712149109
+
+ACCOUNT INFORMATION
+------------------------------------------------------------------------
+Account Number           : RDB2603131001
+Account Type             : SAVINGS
+Currency                 : LKR
+Statement Period         : 01/03/2026 to 31/03/2026
+Account Status           : Active
+
+STATEMENT SUMMARY
+------------------------------------------------------------------------
+Opening Balance               : LKR 0.00
+Total Credits (+)             : LKR 52000.00
+Total Debits  (-)             : LKR 0.00
+Interest Earned               : LKR 0.00
+Closing Balance               : LKR 52000.00
+Total Transactions            : 2
+
+TRANSACTION DETAILS
+------------------------------------------------------------------------
+Date & Time            Transaction ID     Type         Amount       Balance
+------------------------------------------------------------------------
+13/03/2026 13:01:23    TXN202603131301231002 DEPOSIT      +50000.00    50000.00
+  → Initial deposit
+13/03/2026 13:01:55    TXN202603131301551004 DEPOSIT      +2000.00     52000.00
+  → Cash deposit
+------------------------------------------------------------------------
+
+                           IMPORTANT NOTICES
+                      Minimum Balance: LKR 1000.00
+                     Interest Rate: 3.5% per annum
+              For queries, contact support@rajaratabank.lk
+========================================================================
+                        *** END OF STATEMENT ***
+========================================================================
